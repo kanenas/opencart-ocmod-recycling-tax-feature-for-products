@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+	<id><![CDATA[Add recycling tax feature for products]]></id>
+	<name><![CDATA[Add recycling tax feature for products]]></name>
+	<code>knns-recycling-tax-feature-for-products</code>
+	<version>1.0.0</version>
+	<author><![CDATA[kanenas.net (aka Nikolas Branis) - nbran@kanenas.net]]></author>
+	<link>https://kanenas.net/</link>
+	<file path="admin/language/el-gr/catalog/product.php">
+		<operation>
+			<search><![CDATA[// Entry]]></search>
+			<add position="after"><![CDATA[$_['entry_recycling_tax']         = 'Φόρος Ανακύκλωσης';]]></add>
+		</operation>
+	</file>
+	<file path="admin/language/en-gb/catalog/product.php">
+		<operation>
+			<search><![CDATA[// Entry]]></search>
+			<add position="after"><![CDATA[$_['entry_recycling_tax']         = 'Recycling Tax';]]></add>
+		</operation>
+	</file>
+	<file path="admin/model/catalog/product.php">
+		<operation>
+			<search><![CDATA[tax_class_id = '" . (int)$data['tax_class_id'] . "',]]></search>
+			<add position="replace"><![CDATA[tax_class_id = '" . (int)$data['tax_class_id'] . "', recycling_tax = '" . (float)$data['recycling_tax'] . "',]]></add>
+		</operation>
+	</file>
+	<file path="admin/controller/catalog/product.php">
+		<operation>
+			<search><![CDATA[if (isset($this->request->post['minimum'])) {]]></search>
+			<add position="before"><![CDATA[
+		if (isset($this->request->post['recycling_tax'])) {
+			$data['recycling_tax'] = $this->request->post['recycling_tax'];
+		} elseif (!empty($product_info)) {
+			$data['recycling_tax'] = $product_info['recycling_tax'];
+		} else {
+			$data['recycling_tax'] = 0.00000;
+		}
+			]]></add>
+		</operation>
+	</file>
+	<file path="admin/view/template/catalog/product_form.twig">
+		<operation>
+			<search><![CDATA[<input type="text" name="quantity" value="{{ quantity }}" placeholder="{{ entry_quantity }}" id="input-quantity" class="form-control"/>]]></search>
+			<add position="before" offset="3"><![CDATA[
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-recycling-tax">{{ entry_recycling_tax }}</label>
+                <div class="col-sm-10">
+                  <input type="text" name="recycling_tax" value="{{ recycling_tax }}" placeholder="{{ entry_recycling_tax }}" id="input-recycling-tax" class="form-control"/>
+                </div>
+              </div>
+			]]></add>
+		</operation>
+	</file>
+</modification>
